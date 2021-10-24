@@ -150,13 +150,17 @@ get_random_name(char * const name, size_t name_size)
     const char charset_alnum[36] = "abcdefghijklmnopqrstuvwxyz0123456789";
 
     assert(name_size > (size_t) 8U);
-    const int r1 = rand(), r2 = rand();
-    name[0] = charset_alnum[(r1) % sizeof charset_alnum];
-    name[1] = charset_alnum[(r1 >> 16) % sizeof charset_alnum];
-    name[2] = charset_alnum[(r2) % sizeof charset_alnum];
-    name[3] = charset_alnum[(r2 >> 16) % sizeof charset_alnum];
-    name[4] = '.';    name[5] = 'c';    name[6] = 'o';    name[7] = 'm';
-    name[8] = 0;
+    for (int i = 0; i < 12; i += 2) {
+        const int r = rand();
+        name[i] = charset_alnum[(r) % sizeof charset_alnum];
+        name[i + 1] = charset_alnum[(r >> 16) % sizeof charset_alnum];
+
+    }
+    name[12] = '.';
+    name[13] = 'c';
+    name[14] = 'o';
+    name[15] = 'm';
+    name[16] = 0;
 
     return 0;
 }
@@ -238,7 +242,7 @@ update_status(const Context * const context)
         rate = context->pps;
     }
     printf("Sent: [%lu] - Received: [%lu] - Reply rate: [%llu pps] - "
-           "Ratio: [%.2f%%]  \r",
+           "Ratio: [%.2f%%]  \n",
            context->sent_packets, context->received_packets, rate,
            (double) context->received_packets * 100.0 /
            (double) context->sent_packets);
